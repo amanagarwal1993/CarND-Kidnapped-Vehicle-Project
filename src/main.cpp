@@ -28,7 +28,6 @@ std::string hasData(std::string s) {
 int main()
 {
   uWS::Hub h;
-  cout << "1 \n";
   //Set up parameters here
   double delta_t = 0.1; // Time elapsed between measurements [sec]
   double sensor_range = 50; // Sensor range [m]
@@ -45,7 +44,6 @@ int main()
 
   // Create particle filter
   ParticleFilter pf;
-  cout << "2 \n";
   
   h.onMessage([&pf,&map,&delta_t,&sensor_range,&sigma_pos,&sigma_landmark](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
@@ -63,8 +61,7 @@ int main()
           // j[1] is the data JSON object
 
           if (!pf.initialized()) {
-            cout << "3 \n";
-          	// Sense noisy position data from the simulator
+            // Sense noisy position data from the simulator
             double sense_x = std::stod(j[1]["sense_x"].get<std::string>());
             double sense_y = std::stod(j[1]["sense_y"].get<std::string>());
             double sense_theta = std::stod(j[1]["sense_theta"].get<std::string>());
@@ -72,23 +69,19 @@ int main()
             pf.init(sense_x, sense_y, sense_theta, sigma_pos);
           }
           else {
-            cout << "4 \n";
             // Predict the vehicle's next state from previous (noiseless control) data.
             double previous_velocity = std::stod(j[1]["previous_velocity"].get<std::string>());
             double previous_yawrate = std::stod(j[1]["previous_yawrate"].get<std::string>());
 
             pf.prediction(delta_t, sigma_pos, previous_velocity, previous_yawrate);
           }
-          cout << "6 \n";
           // receive noisy observation data from the simulator
           // sense_observations in JSON format [{obs_x,obs_y},{obs_x,obs_y},...{obs_x,obs_y}]
           vector<LandmarkObs> noisy_observations;
           string sense_observations_x = j[1]["sense_observations_x"];
           string sense_observations_y = j[1]["sense_observations_y"];
-          cout << "7 \n";
           std::vector<float> x_sense;
           std::istringstream iss_x(sense_observations_x);
-          cout << "8 \n";
           std::copy(std::istream_iterator<float>(iss_x),
           std::istream_iterator<float>(),
           std::back_inserter(x_sense));
@@ -99,19 +92,15 @@ int main()
           std::copy(std::istream_iterator<float>(iss_y),
           std::istream_iterator<float>(),
           std::back_inserter(y_sense));
-          cout << "9 \n";
           for(int i = 0; i < x_sense.size(); i++) {
             LandmarkObs obs;
             obs.x = x_sense[i];
             obs.y = y_sense[i];
             noisy_observations.push_back(obs);
           }
-          cout << "10 \n";
           // Update the weights and resample
           pf.updateWeights(sensor_range, sigma_landmark, noisy_observations, map);
-          cout << "11 \n";
           pf.resample();
-          cout << "12 \n";
           // Calculate and output the average weighted error of the particle filter over all time steps so far.
           vector<Particle> particles = pf.particles;
           int num_particles = particles.size();
@@ -191,90 +180,3 @@ int main()
   }
   h.run();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

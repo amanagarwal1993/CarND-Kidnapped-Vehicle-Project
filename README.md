@@ -1,13 +1,18 @@
-# Overview
-This repository contains all the code needed to complete the final project for the Localization course in Udacity's Self-Driving Car Nanodegree.
-
-#### Submission
-All you will submit is your completed version of `particle_filter.cpp`, which is located in the `src` directory. You should probably do a `git pull` before submitting to verify that your project passes the most up-to-date version of the grading code (there are some parameters in `src/main.cpp` which govern the requirements on accuracy and run time.)
+# Particle Filter for Localizing a Car!
 
 ## Project Introduction
 Your robot has been kidnapped and transported to a new location! Luckily it has a map of this location, a (noisy) GPS estimate of its initial location, and lots of (noisy) sensor and control data.
 
-In this project you will implement a 2 dimensional particle filter in C++. Your particle filter will be given a map and some initial localization information (analogous to what a GPS would provide). At each time step your filter will also get observation and control data. 
+I implement a 2 dimensional particle filter in C++. The particle filter is given a map and some initial localization information (analogous to what a GPS would provide). At each time step the filter also gets observation and control data, which are basically a set of observed landmarks at a particular distance from the car and its previous velocity and yaw angle respectively.
+
+## Results
+(Because you might not want to read the rest of this README)
+
+I used only 10 particles in this case because the map is simple, so it runs quite fast (although I could probably get similar results with even fewer particles).
+
+Ta-da!!!
+![Result](success.png)
+
 
 ## Running the Code
 This project involves the Term 2 Simulator which can be downloaded [here](https://github.com/udacity/self-driving-car-sim/releases)
@@ -74,12 +79,6 @@ OUTPUT: values provided by the c++ program to the simulator
 ["best_particle_sense_y"] <= list of sensed y positions
 
 
-Your job is to build out the methods in `particle_filter.cpp` until the simulator output says:
-
-```
-Success! Your particle filter passed!
-```
-
 # Implementing the Particle Filter
 The directory structure of this repository is as follows:
 
@@ -104,12 +103,8 @@ root
     |   particle_filter.h
 ```
 
-The only file you should modify is `particle_filter.cpp` in the `src` directory. The file contains the scaffolding of a `ParticleFilter` class and some associated methods. Read through the code, the comments, and the header file `particle_filter.h` to get a sense for what this code is expected to do.
-
-If you are interested, take a look at `src/main.cpp` as well. This file contains the code that will actually be running your particle filter and calling the associated methods.
-
 ## Inputs to the Particle Filter
-You can find the inputs to the particle filter in the `data` directory. 
+You can also find the inputs to the particle filter in the `data` directory. 
 
 #### The Map*
 `map_data.txt` includes the position of landmarks (in meters) on an arbitrary Cartesian coordinate system. Each row has three columns
@@ -117,18 +112,13 @@ You can find the inputs to the particle filter in the `data` directory.
 2. y position
 3. landmark id
 
-### All other data the simulator provides, such as observations and controls.
+## How the code works
+1. Initializes the system with a certain number of particles, using noisy GPS readings.
+2. At each time step, it receives two kinds of inputs: Landmark observations, and the previous velocity and yaw angle.
+3. We move each particle using a non-linear motion model, and update its position
+4. Then we use the landmark observations for a measurement update step to assign weights to each particle. The weight represents the likelihood that the particle represents the actual position.
+5. We use a stochastic sampling wheel to resample the particles so that the strongest weights survive on.
+6. After doing the above enough times, the particles will eventually be filtered in such a way that they track the actual position of the car. Bam!
 
-> * Map data provided by 3D Mapping Solutions GmbH.
-
-## Success Criteria
-If your particle filter passes the current grading code in the simulator (you can make sure you have the current version at any time by doing a `git pull`), then you should pass! 
-
-The things the grading code is looking for are:
-
-
-1. **Accuracy**: your particle filter should localize vehicle position and yaw to within the values specified in the parameters `max_translation_error` and `max_yaw_error` in `src/main.cpp`.
-
-2. **Performance**: your particle filter should complete execution within the time of 100 seconds.
-
-
+## License
+[GNU General Public License](http://choosealicense.com/licenses/gpl-3.0/#)
