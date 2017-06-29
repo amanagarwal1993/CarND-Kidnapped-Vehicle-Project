@@ -16,7 +16,8 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 	
   num_particles = 10;
   
-  default_random_engine generator;
+  random_device rand;
+  default_random_engine generator(rand());
   
   // Create normal distributions centered around initial measurements
   normal_distribution<double> x_dist(x, std[0]);
@@ -115,7 +116,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
       
       float mu_x, mu_y;
       Map::single_landmark_s best;
-      double least_dist = 1000000;
+      double least_dist = INFINITY;
       
       //This loop picks the landmark which has lowest distance from the current measurement
       for (int k=0; k < map_landmarks.landmark_list.size(); k++) {
